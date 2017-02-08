@@ -12,7 +12,7 @@
 			<column name="last_name" type="varchar(50)" />
 			<column name="age" type="int" />
 		</createTable>
-		<addAutoIncrement tableName="person" columnName="id" />
+		<addAutoIncrement tableName="person" columnName="id" columnDataType="int" />
 		<rollback>
 			<dropTable tableName="person" />
 		</rollback>
