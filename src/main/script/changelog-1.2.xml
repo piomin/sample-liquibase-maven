@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	
+	<changeSet author="minkowski" id="1.2">
+		<insert tableName="person">
+			<column name="first_name" value="Adam" />
+			<column name="last_name" value="Kowalski" />
+			<column name="age" valueNumeric="35" />
+			<column name="pesel" value="82010119872" />
+		</insert>
+		<insert tableName="person">
+			<column name="first_name" value="Tomasz" />
+			<column name="last_name" value="Malinowski" />
+			<column name="age" valueNumeric="22" />
+			<column name="pesel" value="95031284763" />
+		</insert>
+		<rollback>
+			<delete tableName="person">
+				<where>id = 1 or id = 2</where>
+			</delete>
+		</rollback>
+	</changeSet>
+	
+</databaseChangeLog> 
