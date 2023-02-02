@@ -19,19 +19,17 @@ jobs:
       MAVEN_OPTS: -Xmx3200m
 
     steps:
-    - checkout
-    - run:
-        name: Wait for Database Connection
-        command: dockerize -wait tcp://localhost:3306 -timeout 1m
-    - run: sudo apt install -y mysql-client
-    - run: mysql -h 127.0.0.1 -u root -p default -e "create database default"
-    - restore_cache:
-        keys:
-          -  v1-dependencies-{{ checksum "pom.xml" }}
-          -  v1-dependencies-
-    - run: mvn dependency:go-offline
-    - save_cache:
-        paths:
-          - ~/.m2
-        key: v1-dependencies-{{ checksum "pom.xml" }}
-    - run: mvn integration-test
+      - checkout
+      - run:
+          name: Wait for Database Connection
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m
+      - restore_cache:
+          keys:
+            -  v1-dependencies-{{ checksum "pom.xml" }}
+            -  v1-dependencies-
+      - run: mvn dependency:go-offline
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+      - run: mvn package liquibase:update
