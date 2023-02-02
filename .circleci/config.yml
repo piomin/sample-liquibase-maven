@@ -3,31 +3,28 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/mysql:8.0
+      - image: cimg/openjdk:11.0
+        MAVEN_OPTS: -Xmx3200m
+      - image: circleci/mysql:5.7
         environment:
           MYSQL_ROOT_PASSWORD: default
-          MYSQL_DATABASE: test
+          MYSQL_DATABASE: default
           MYSQL_USER: default
           MYSQL_PASSWORD: default
     steps:
-      - run:
-          name: Waiting for MySQL to be ready
-          command: |
-            for i in `seq 1 10`;
-            do
-              nc -z 127.0.0.1 3306 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for MySQL && exit 1
-
-orbs:
-  maven: circleci/maven@1.4.0
-
-workflows:
-  maven_test:
-    jobs:
-      - maven/test:
-          command: 'package'
-          pre-steps:
-            - build
+    - checkout
+    - run:
+        name: Wait for Database Connection
+        command: dockerize -wait tcp://localhost:3306 -timeout 1m
+    - run: sudo apt-get install mysql-client
+    - run: mysql -h 127.0.0.1 -u root -p default -e "create database default"
+    - restore_cache:
+        keys:
+          -  v1-dependencies-{{ checksum "pom.xml" }}
+          -  v1-dependencies-
+    - run: mvn dependency:go-offline
+    - save_cache:
+        paths:
+          - ~/.m2
+        key: v1-dependencies-{{ checksum "pom.xml" }}
+    - run: mvn integration-test
