@@ -1,0 +1,34 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/mysql:8.0
+        auth:
+          environment:
+            MYSQL_ROOT_PASSWORD: default
+            MYSQL_DATABASE: test
+            MYSQL_USER: default
+            MYSQL_PASSWORD: default
+    steps:
+      - run:
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+
+orbs:
+  maven: circleci/maven@1.4.0
+
+workflows:
+  maven_test:
+    jobs:
+      - maven/test:
+          command: 'package'
+          pre-steps:
+            - build
