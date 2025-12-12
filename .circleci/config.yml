@@ -6,7 +6,7 @@ jobs:
       - image: cimg/openjdk:25.0
         environment:
           MAVEN_OPTS: -Xmx3200m
-      - image: cimg/mysql:8.0
+      - image: cimg/mysql:8.4
         environment:
           MYSQL_ROOT_PASSWORD: default
           MYSQL_DATABASE: default
